@@ -17,14 +17,26 @@ updateQuery = (query) => {
 this.setState({ query: query.trim() })
 }
 
+clearQuery = () => {
+  this.setState({query:''})
+}
   render() {
+   const { contacts, onDeleteContact } = this.props
+   const { query } = this.state
+
+
     let showingContacts 
-    if (this.state)
+    if (query) {
+     const match = new RegExp(escapeRegExp(query),'i')
+     showingContacts = contacts.filter((contact)=>match.test(contact.name) )
+  } else {
+      showingContacts = contacts
+    }
 
 
     return (
       <div className="list-contacts">
-      {JSON.stringify(this.state)}
+     
       <div className="list-contacts-top">
       <input type="text" className="search-contacts"
       placeholder="Search contacts" 
@@ -33,10 +45,16 @@ this.setState({ query: query.trim() })
       />
       </div>
 
+{ showingContacts.length !== contacts.length && (
+  <div className="showing-contacts">
+   <span>Now showing {showingContacts.length} of {contacts.length} total </span> 
+   <button onClick= {this.clearQuery} >Show all</button>
+  </div>
+)}
       
 
       <ol className='contact-list'>
-      {this.props.contacts.map(contact =>(
+      {showingContacts.map(contact =>(
         <li key={contact.id} className='contact-list-item'>
           <div className="contact-avatar" style={{backgroundImage:`url(${contact.avatarURL})`}}></div>
               <div className='contact-details'>
